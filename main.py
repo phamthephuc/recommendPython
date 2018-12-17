@@ -12,15 +12,26 @@ allUser = getListData("select id from users");
 allItem = getListData("select id from location");
 data_from_database = pd.DataFrame(index=allUser,columns=allItem)
 data_from_database[:] = -5;
-print(data_from_database)
+
 allRating = getListObject("select id_user, id_location, score from evaluation")  
 for i in allRating:
     if(i[0] in data_from_database.index and i[1] in data_from_database.columns):
+#         print(i[0]," - " ,i[1], " : ", i[2]);
         data_from_database.loc[i[0],i[1]] = i[2];
-    
-print(data_from_database)
-    
-recommend_data = recommendLocation(data_from_database)   
+
+
+dictAverageScore = {};
+
+for i in data_from_database.columns:
+    listData = [item for item in data_from_database.loc[:,i] if item >= 0]
+    if len(listData) == 0:
+        dictAverageScore[i] = 0;
+    else:
+        dictAverageScore[i] = numpy.sum(listData) / len(listData);
+        
+
+recommend_data = recommendLocation(data_from_database, dictAverageScore) 
+# print(recommend_data)
 
 app = Flask(__name__)
 api = Api(app)
@@ -28,10 +39,11 @@ api = Api(app)
 class RecommendTravel(Resource):
     def get(self, id_user):
         id_user = numpy.int64(id_user)
-        passcodeFromClient = request.headers.get('passcode')
+        passcodeFromClient = request.headers.get('passcode');
         if passcodeFromClient != passcode:
             return
-        result = recommend_data.loc[id_user,:].tolist()
+        print("can return value");
+        result = recommend_data.loc[id_user,:].tolist();
         return {"data" : [x for x in result if x != -1]  }
     
 class AddNewLocation(Resource):
@@ -41,6 +53,7 @@ class AddNewLocation(Resource):
             return
         id_location = request.form['id_location']
         id_location = numpy.int64(id_location)
+        dictAverageScore[id_location] = 0;
         data_from_database.loc[:,id_location] = [-5] * len(data_from_database.index)
         return {"data" : "OK"}
 
@@ -53,7 +66,7 @@ class AddNewUser(Resource):
         id_user = numpy.int64(id_user)
         data_from_database.loc[id_user,:] = [-5] * len(data_from_database.columns)
         recommend_data.loc[id_user,:] = data_from_database.columns.sort_values(ascending=False)[0:10]
-        _thread.start_new_thread(recommendLocationForUser, (data_from_database, id_user, recommend_data ) )
+        _thread.start_new_thread(recommendLocationForUser, (data_from_database, id_user, recommend_data, dictAverageScore) )
         return {"data" : "OK"}
 
 class AddEvaluation(Resource):
@@ -67,9 +80,16 @@ class AddEvaluation(Resource):
         id_location = numpy.int64(id_location)
         score = request.form['score']
         score = numpy.int64(score)
+        
+        listData = [item for item in data_from_database.loc[:,id_location].tolist() if item >= 0];
+        if len(listData) == 0:
+            dictAverageScore[id_location] = 0;
+        else:
+            dictAverageScore[id_location] = numpy.sum(listData) / len(listData);
+        
         if data_from_database.loc[id_user,id_location] != score:
             data_from_database.loc[id_user,id_location] = score;
-            _thread.start_new_thread(recommendLocationForUser, (data_from_database, id_user, recommend_data ) )     
+            _thread.start_new_thread(recommendLocationForUser, (data_from_database, id_user, recommend_data, dictAverageScore) )     
         return {"data" : "OK"}
 
 class DeleteUser(Resource):
@@ -90,9 +110,10 @@ class DeleteLocation(Resource):
             return
         id_location = request.form['id_location']
         id_location = numpy.int64(id_location)
+        del dictAverageScore[id_location]
         del data_from_database[id_location]
         recommend_data.replace(id_location,-1,inplace=True)
-        _thread.start_new_thread(reRecommendLocationForUser, (data_from_database, recommend_data ))
+        _thread.start_new_thread(reRecommendLocationForUser, (data_from_database, recommend_data, dictAverageScore ))
         return {"data" : "OK" } 
 #     
 api.add_resource(RecommendTravel, '/recommendTravel/<id_user>')
