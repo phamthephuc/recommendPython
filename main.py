@@ -89,7 +89,8 @@ class AddNewUser(Resource):
 #         recommend_data.loc[id_user,:] = data_from_database.columns.sort_values(ascending=False)[0:10]
         global recommend_data
         recommend_data = recommend_data.append(pd.Series(data_from_database.columns.sort_values(ascending=False)[0:10], index=recommend_data.columns, name=id_user))
-        _thread.start_new_thread(recommendLocationForUser, (data_from_database, id_user, recommend_data, dictAverageScore) )
+        recommendLocationForUser(data_from_database, id_user, recommend_data, dictAverageScore)
+#         _thread.start_new_thread(recommendLocationForUser, (data_from_database, id_user, recommend_data, dictAverageScore) )
         return {"data" : "OK"}
 
 class AddEvaluation(Resource):
@@ -120,7 +121,9 @@ class AddEvaluation(Resource):
             data_from_database.loc[id_user,id_location] = score;
             print("VALUE SCORE IN MAIN THREAD");
             print( data_from_database.loc[id_user,id_location])
-            _thread.start_new_thread(recommendLocationForUser, (data_from_database, id_user, recommend_data, dictAverageScore) )     
+            recommendLocationForUser(data_from_database, id_user, recommend_data, dictAverageScore)
+#             _thread.start_new_thread(recommendLocationForUser, (data_from_database, id_user, recommend_data, dictAverageScore) ) 
+        print("START THREAD!")        
         return {"data" : "OK"}
 
 class DeleteUser(Resource):
