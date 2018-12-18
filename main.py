@@ -79,17 +79,17 @@ class AddNewUser(Resource):
         id_user = numpy.int64(id_user)
         
         global data_from_database
+        global recommend_data
 #         columns_data = data_from_database.columns;
 #         data_add = [-5] * len(columns_data);
-#         data_from_database.append(pd.Series([-5] * len(data_from_database.columns), index=data_from_database.columns, name=id_user), inplace=True)
+        recommend_data = recommend_data.append(pd.Series(data_from_database.columns.sort_values(ascending=False)[0:10], index=recommend_data.columns, name=id_user), inplace=True)
+        data_from_database = data_from_database.append(pd.Series([-5] * len(data_from_database.columns), index=data_from_database.columns, name=id_user), inplace=True)
 #         
 #         print("INDEX OF MAIN");
 #         print(data_from_database.index)
 #         data_from_database = data_from_database.append(pd.DataFrame(data_add,index=id_user,columns=columns_data))
-        data_from_database.loc[id_user,:] = [-5] * len(data_from_database.columns);
-        recommend_data.loc[id_user,:] = data_from_database.columns.sort_values(ascending=False)[0:10]
-#         global recommend_data
-#         recommend_data.append(pd.Series(data_from_database.columns.sort_values(ascending=False)[0:10], index=recommend_data.columns, name=id_user), inplace=True)
+#         data_from_database.loc[id_user,:] = [-5] * len(data_from_database.columns);
+#         recommend_data.loc[id_user,:] = data_from_database.columns.sort_values(ascending=False)[0:10]
         _thread.start_new_thread(recommendLocationForUser, (data_from_database, id_user, recommend_data, dictAverageScore) )
         return {"data" : "OK"}
 
