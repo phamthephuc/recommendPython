@@ -37,10 +37,6 @@ def recommendLocation(data_from_database, averageEvaluation):
     return data_sims
 
 def recommendLocationForUser(data_from_database,id_user,recommend_data, averageEvaluation):
-    print("INDEX OF THREAD");
-    print(data_from_database.index.tolist())  
-    print("VALUE SCORE IN ORTHER THREAD");
-    print( data_from_database.loc[id_user,:])
     data_item_base_frame = pd.DataFrame(index=[id_user], columns=data_from_database.index)
     u = data_from_database.loc[id_user,:];
     u1 = u.index.tolist();
@@ -63,7 +59,7 @@ def recommendLocationForUser(data_from_database,id_user,recommend_data, averageE
     
             
     recommend_data.loc[id_user,:] = data_tmp.max().nlargest(10).index.tolist()
-    print("RECOMMEND FOR USER FINISH") 
+    return;
     
 def reRecommendLocationForUser(data_from_database,recommend_data, averageValue):
     recommend_data = recommendLocation(data_from_database, averageValue);

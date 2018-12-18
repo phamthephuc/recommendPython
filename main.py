@@ -43,13 +43,13 @@ class RecommendTravel(Resource):
         if passcodeFromClient != passcode:
             return
         
-        print("INDEX IN RECOMMENT TRAVEL");
-        print(data_from_database.index)
-        print(recommend_data.index)
+#         print("INDEX IN RECOMMENT TRAVEL");
+#         print(data_from_database.index)
+#         print(recommend_data.index)
         
         result = recommend_data.loc[id_user,:].tolist();
-        print("RESULT RECOMMENT TRAVEL");
-        print(result)
+#         print("RESULT RECOMMENT TRAVEL");
+#         print(result)
         
         return {"data" : [x for x in result if x != -1]  }
     
@@ -64,10 +64,9 @@ class AddNewLocation(Resource):
         dictAverageScore[id_location] = 0;
         global data_from_database
         data_from_database.insert(loc=0, column=id_location, value=[-5] * len(data_from_database.index))
-#         data_from_database = data_from_database.assign(id_location=[-5] * len(data_from_database.index))
-#         data_from_database.rename(columns={'id_location': id_location}, inplace=True)
-        print("DATA AFTER INSERT A NEW LOCATION")
-        print(data_from_database)
+        
+#         print("DATA AFTER INSERT A NEW LOCATION")
+#         print(data_from_database)
 #         data_from_database.loc[:,id_location] = [-5] * len(data_from_database.index)
         return {"data" : "OK"}
 
@@ -88,7 +87,7 @@ class AddNewUser(Resource):
 #         print(data_from_database.index)
 #         data_from_database = data_from_database.append(pd.DataFrame(data_add,index=id_user,columns=columns_data))
         data_from_database.loc[id_user,:] = [-5] * len(data_from_database.columns);
-        recommend_data.loc[id_user,:] = data_from_database.columns.sort_values(ascending=False)[0:10];
+        recommend_data.loc[id_user,:] = data_from_database.columns.sort_values(ascending=False)[0:10]
 #         global recommend_data
 #         recommend_data.append(pd.Series(data_from_database.columns.sort_values(ascending=False)[0:10], index=recommend_data.columns, name=id_user), inplace=True)
         _thread.start_new_thread(recommendLocationForUser, (data_from_database, id_user, recommend_data, dictAverageScore) )
@@ -116,14 +115,14 @@ class AddEvaluation(Resource):
         else:
             dictAverageScore[id_location] = numpy.sum(listData) / len(listData);
         
-        print("INDEX OF MAIN IN ADD VALUE");
-        print(data_from_database.index.tolist())
+#         print("INDEX OF MAIN IN ADD VALUE");
+#         print(data_from_database.index.tolist())
         if data_from_database.loc[id_user,id_location] != score:
             data_from_database.loc[id_user,id_location] = score;
-            print("VALUE SCORE IN MAIN THREAD");
-            print( data_from_database.loc[id_user,id_location])
+#             print("VALUE SCORE IN MAIN THREAD");
+#             print( data_from_database.loc[id_user,id_location])
             _thread.start_new_thread(recommendLocationForUser, (data_from_database, id_user, recommend_data, dictAverageScore) ) 
-        print("START THREAD")        
+#         print("START THREAD")        
         return {"data" : "OK"}
 
 class DeleteUser(Resource):
