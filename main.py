@@ -16,7 +16,7 @@ data_from_database[:] = -5;
 allRating = getListObject("select id_user, id_location, score from evaluation")  
 for i in allRating:
     if(i[0] in data_from_database.index and i[1] in data_from_database.columns):
-#         print(i[0]," - " ,i[1], " : ", i[2]);
+        print(i[0]," - " ,i[1], " : ", i[2]);
         data_from_database.loc[i[0],i[1]] = i[2];
 
 
@@ -31,7 +31,7 @@ for i in data_from_database.columns:
         
 
 recommend_data = recommendLocation(data_from_database, dictAverageScore) 
-# print(recommend_data)
+print(recommend_data)
 
 app = Flask(__name__)
 api = Api(app)
@@ -42,8 +42,9 @@ class RecommendTravel(Resource):
         passcodeFromClient = request.headers.get('passcode');
         if passcodeFromClient != passcode:
             return
-        print("can return value");
         result = recommend_data.loc[id_user,:].tolist();
+        print(recommend_data)
+        print(result)
         return {"data" : [x for x in result if x != -1]  }
     
 class AddNewLocation(Resource):
@@ -90,6 +91,7 @@ class AddEvaluation(Resource):
         if data_from_database.loc[id_user,id_location] != score:
             data_from_database.loc[id_user,id_location] = score;
             _thread.start_new_thread(recommendLocationForUser, (data_from_database, id_user, recommend_data, dictAverageScore) )     
+        print(recommend_data)
         return {"data" : "OK"}
 
 class DeleteUser(Resource):
@@ -113,6 +115,7 @@ class DeleteLocation(Resource):
         del dictAverageScore[id_location]
         del data_from_database[id_location]
         recommend_data.replace(id_location,-1,inplace=True)
+        print(recommend_data)
         _thread.start_new_thread(reRecommendLocationForUser, (data_from_database, recommend_data, dictAverageScore ))
         return {"data" : "OK" } 
 #     

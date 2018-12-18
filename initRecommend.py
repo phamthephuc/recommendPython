@@ -56,7 +56,8 @@ def recommendLocationForUser(data_from_database,id_user,recommend_data, averageE
         list_tmp = list1.index.tolist();
         listCompare = [list1[ind] if list1[ind] > 0 else averageEvaluation[ind] for ind in list_tmp]
         data_tmp.loc[k,:] = numpy.subtract(listCompare,list2);
-            
+    
+    print("RECOMMEND FOR USER FINISH")        
     recommend_data.loc[id_user,:] = data_tmp.max().nlargest(10).index.tolist() 
     
 def reRecommendLocationForUser(data_from_database,recommend_data, averageValue):
