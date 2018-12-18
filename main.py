@@ -77,13 +77,13 @@ class AddNewUser(Resource):
 #         data_add = [-5] * len(columns_data);
         data_from_database = data_from_database.append(pd.Series([-5] * len(data_from_database.columns), index=data_from_database.columns, name=id_user))
         
-        print(data_from_database)
+        print("INDEX OF MAIN");
+        print(data_from_database.index.tolist())
 #         data_from_database = data_from_database.append(pd.DataFrame(data_add,index=id_user,columns=columns_data))
 #         data_from_database.loc[id_user,:] = [-5] * len(data_from_database.columns);
 #         recommend_data.loc[id_user,:] = data_from_database.columns.sort_values(ascending=False)[0:10]
         global recommend_data
         recommend_data = recommend_data.append(pd.Series(data_from_database.columns.sort_values(ascending=False)[0:10], index=recommend_data.columns, name=id_user))
-        print(recommend_data)
         _thread.start_new_thread(recommendLocationForUser, (data_from_database, id_user, recommend_data, dictAverageScore) )
         return {"data" : "OK"}
 
@@ -108,7 +108,6 @@ class AddEvaluation(Resource):
         if data_from_database.loc[id_user,id_location] != score:
             data_from_database.loc[id_user,id_location] = score;
             _thread.start_new_thread(recommendLocationForUser, (data_from_database, id_user, recommend_data, dictAverageScore) )     
-        print(recommend_data)
         return {"data" : "OK"}
 
 class DeleteUser(Resource):
@@ -132,7 +131,6 @@ class DeleteLocation(Resource):
         del dictAverageScore[id_location]
         del data_from_database[id_location]
         recommend_data.replace(id_location,-1,inplace=True)
-        print(recommend_data)
         _thread.start_new_thread(reRecommendLocationForUser, (data_from_database, recommend_data, dictAverageScore ))
         return {"data" : "OK" } 
 #     
