@@ -43,6 +43,11 @@ class RecommendTravel(Resource):
         passcodeFromClient = request.headers.get('passcode');
         if passcodeFromClient != passcode:
             return
+        
+        print("INDEX IN RECOMMENT TRAVEL");
+        print(data_from_database.index)
+        print(recommend_data.index)
+        
         result = recommend_data.loc[id_user,:].tolist();
         print(recommend_data)
         print(result)
