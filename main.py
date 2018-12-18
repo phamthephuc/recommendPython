@@ -118,6 +118,8 @@ class AddEvaluation(Resource):
         print(data_from_database.index.tolist())
         if data_from_database.loc[id_user,id_location] != score:
             data_from_database.loc[id_user,id_location] = score;
+            print("VALUE SCORE IN MAIN THREAD");
+            print( data_from_database.loc[id_user,id_location])
             _thread.start_new_thread(recommendLocationForUser, (data_from_database, id_user, recommend_data, dictAverageScore) )     
         return {"data" : "OK"}
 

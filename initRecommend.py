@@ -39,6 +39,8 @@ def recommendLocation(data_from_database, averageEvaluation):
 def recommendLocationForUser(data_from_database,id_user,recommend_data, averageEvaluation):
     print("INDEX OF THREAD");
     print(data_from_database.index.tolist())  
+    print("VALUE SCORE IN ORTHER THREAD");
+    print( data_from_database.loc[id_user,:])
     data_item_base_frame = pd.DataFrame(index=[id_user], columns=data_from_database.index)
     u = data_from_database.loc[id_user,:];
     u1 = u.index.tolist();
