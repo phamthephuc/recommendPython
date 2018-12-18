@@ -99,12 +99,18 @@ class AddEvaluation(Resource):
         score = request.form['score']
         score = numpy.int64(score)
         
+        global dictAverageScore
+        global data_from_database
+        global recommend_data
+        
         listData = [item for item in data_from_database.loc[:,id_location].tolist() if item >= 0];
         if len(listData) == 0:
             dictAverageScore[id_location] = 0;
         else:
             dictAverageScore[id_location] = numpy.sum(listData) / len(listData);
         
+        print("INDEX OF MAIN IN ADD VALUE");
+        print(data_from_database.index.tolist())
         if data_from_database.loc[id_user,id_location] != score:
             data_from_database.loc[id_user,id_location] = score;
             _thread.start_new_thread(recommendLocationForUser, (data_from_database, id_user, recommend_data, dictAverageScore) )     
