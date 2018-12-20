@@ -17,9 +17,7 @@ data_from_database[:] = -5;
 allRating = getListObject("select id_user, id_location, score from evaluation")  
 for i in allRating:
     if(i[0] in data_from_database.index and i[1] in data_from_database.columns):
-        print(i[0]," - " ,i[1], " : ", i[2]);
         data_from_database.loc[i[0],i[1]] = i[2];
-
 
 dictAverageScore = {};
 
